@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Milo - Your lil friend</title>
+<style>
+body {
+margin: 0;
+font-family: "Poppins", sans-serif;
+background: linear-gradient(to bottom, #0b0f2b, #121c3b);
+color: #fff;
+overflow: hidden;
+height: 100vh;
+position: relative;
+}
+#guitarPlayer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 100px;
+  height: auto;
+  cursor: pointer;
+  z-index: 999;
+}
+
+
+#guitarGif {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease;
+}
+
+#guitarGif:hover {
+  transform: scale(1.1);
+}
+
+
+/* Starry Background Animation */
+.stars {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+overflow: hidden;
+}
+.star {
+position: absolute;
+background-color: #fff;
+border-radius: 50%;
+opacity: 0.8;
+animation: twinkle var(--duration) ease-in-out infinite;
+}
+@keyframes twinkle {
+0%, 100% { opacity: 0.2; transform: scale(0.8); }
+50% { opacity: 1; transform: scale(1.2); }
+}
+/* Login Box */
+.login-container {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+z-index: 1;
+}
+.login-box {
+background: #1f2235;
+padding: 40px;
+border-radius: 12px;
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+width: 320px;
+animation: fadeIn 1s ease-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.login-box h2 {
+text-align: center;
+margin-bottom: 20px;
+}
+.login-box input {
+width: 100%;
+padding: 12px;
+margin-bottom: 16px;
+border: none;
+border-radius: 6px;
+background: #2c2e45;
+color: #fff;
+}
+.login-box button {
+width: 100%;
+padding: 12px;
+border: none;
+background: #5b84d6;
+color: white;
+font-weight: bold;
+border-radius: 6px;
+cursor: pointer;
+transition: background 0.3s ease;
+}
+.login-box button:hover {
+background: #4a70b0;
+}
+/* Main Page */
+.main-page {
+display: none;
+height: 100vh;
+width: 100%;
+position: relative;
+overflow: hidden;
+}
+.milo-container {
+position: absolute;
+left: 50%;
+bottom: 120px;
+transform: translateX(-50%);
+text-align: center;
+animation: float 3s ease-in-out infinite;
+z-index: 1; /* Ensure Milo is above other elements */
+}
+@keyframes float {
+0% { transform: translateX(-50%) translateY(0); }
+50% { transform: translateX(-50%) translateY(-10px); }
+100% { transform: translateX(-50%) translateY(0); }
+}
+.milo-container img {
+width: 320px;
+}
+.bubble {
+background: linear-gradient(to right, #f9d976, #f39f86);
+color: #333;
+padding: 15px 20px;
+border-radius: 20px;
+max-width: 300px;
+margin: 10px auto;
+position: relative;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+animation: fadeInUp 0.5s ease-out;
+z-index: 2; /* Ensure bubble is above Milo */
+}
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.bubble::after {
+content: "";
+position: absolute;
+bottom: -10px;
+left: 50px;
+border-width: 10px;
+border-style: solid;
+border-color: #f39f86 transparent transparent transparent;
+}
+/* Navigation */
+.nav-bar {
+position: fixed;
+top: 20px;
+left: 20px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+background: rgba(30, 30, 40, 0.5);
+border-radius: 20px;
+padding: 20px 10px;
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+backdrop-filter: blur(10px);
+z-index: 2;
+}
+.nav-item {
+color: #fff;
+text-align: center;
+font-size: 14px;
+font-weight: 500;
+padding: 10px 8px;
+border-radius: 12px;
+cursor: pointer;
+transition: all 0.3s ease;
+user-select: none;
+line-height: 1.2;
+}
+.nav-item:hover {
+background: rgba(255, 255, 255, 0.1);
+transform: scale(1.05);
+box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+.nav-item.active {
+background: #fda085;
+color: #fff;
+font-weight: bold;
+box-shadow: 0 0 8px rgba(253, 160, 133, 0.6);
+}
+/* Chatbox */
+#chatBox {
+position: fixed;
+bottom: 20px;
+right: 20px;
+width: 300px;
+max-height: 400px;
+background: #1e1e35;
+border-radius: 20px;
+box-shadow: 0 0 20px rgba(0,0,0,0.4);
+display: none;
+flex-direction: column;
+overflow: hidden;
+z-index: 10;
+}
+.chat-history {
+flex: 1;
+padding: 10px;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.message {
+display: flex;
+align-items: flex-end;
+max-width: 100%;
+}
+.milo-msg, .user-msg {
+padding: 10px 15px;
+border-radius: 20px;
+max-width: 220px;
+word-wrap: break-word;
+line-height: 1.4;
+font-size: 14px;
+}
+.milo-msg {
+background: #fef8ec;
+color: #333;
+border-top-left-radius: 0;
+margin-left: 5px;
+}
+.user-msg {
+background: linear-gradient(to right, #a18cd1, #fbc2eb);
+color: white;
+align-self: flex-end;
+border-top-right-radius: 0;
+margin-right: 5px;
+}
+.milo-avatar {
+width: 32px;
+height: 32px;
+margin-right: 5px;
+}
+.chat-input {
+display: flex;
+border-top: 1px solid #333;
+}
+.chat-input input {
+flex: 1;
+padding: 10px;
+border: none;
+border-radius: 0 0 0 20px;
+background: #2e2f4f;
+color: white;
+font-size: 14px;
+}
+.chat-input button {
+padding: 10px 15px;
+background: #fda085;
+color: #2e2f3e;
+border: none;
+border-radius: 0 0 20px 0;
+font-weight: bold;
+cursor: pointer;
+}
+/* Story Section */
+#storySection {
+display: none;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+padding: 40px;
+background: rgba(30, 30, 40, 0.8);
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+max-width: 600px;
+width: 90%;
+backdrop-filter: blur(5px);
+z-index: 3;
+}
+#storySection p {
+font-size: 1.4em;
+margin-bottom: 30px;
+line-height: 1.6;
+opacity: 0;
+transform: translateY(20px);
+animation: fadeInStory 1.5s forwards;
+}
+@keyframes fadeInStory {
+to { opacity: 1; transform: translateY(0); }
+}
+#storySection button {
+padding: 12px 25px;
+background: #5b84d6;
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 1.1em;
+cursor: pointer;
+transition: background 0.3s ease;
+}
+#storySection button:hover {
+background: #4a70b0;
+}
+/* Calm Mode Section */
+#calmModeSection {
+display: none;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+padding: 40px;
+background: rgba(30, 30, 40, 0.8);
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+max-width: 600px;
+width: 90%;
+backdrop-filter: blur(5px);
+z-index: 3;
+}
+.breathing-container {
+position: relative;
+width: 200px;
+height: 200px;
+margin: 30px auto;
+}
+.breathing-circle {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background: radial-gradient(circle, #a18cd1, #fbc2eb);
+box-shadow: 0 0 20px rgba(161, 140, 209, 0.6);
+transition: transform 4s ease-in-out;
+}
+.breathing-instructions {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 1.5em;
+font-weight: bold;
+color: white;
+text-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.calm-tips {
+margin-top: 30px;
+text-align: left;
+background: rgba(255, 255, 255, 0.1);
+padding: 20px;
+border-radius: 10px;
+}
+.calm-tips h3 {
+margin-top: 0;
+color: #fda085;
+}
+.calm-tips ul {
+padding-left: 20px;
+}
+.calm-tips li {
+margin-bottom: 10px;
+}
+/* Cloud Worries Section */
+#cloudWorriesSection {
+display: none;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+padding: 40px;
+background: rgba(30, 30, 40, 0.8);
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+max-width: 600px;
+width: 90%;
+backdrop-filter: blur(5px);
+z-index: 3;
+}
+.cloud-container {
+position: relative;
+height: 200px;
+margin: 20px 0;
+overflow: hidden;
+}
+.cloud {
+position: absolute;
+background: rgba(255, 255, 255, 0.9);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+color: #333;
+font-weight: bold;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+transition: all 2s ease-out;
+}
+.worry-input {
+width: 100%;
+padding: 15px;
+margin-bottom: 20px;
+border-radius: 10px;
+border: 2px solid #5b84d6;
+background: rgba(255, 255, 255, 0.1);
+color: white;
+font-size: 16px;
+text-align: center;
+}
+.worry-input::placeholder {
+color: rgba(255, 255, 255, 0.7);
+}
+.release-btn {
+padding: 12px 25px;
+background: #5b84d6;
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 1.1em;
+cursor: pointer;
+transition: background 0.3s ease;
+}
+.release-btn:hover {
+background: #4a70b0;
+}
+.worry-note {
+background: rgba(255, 255, 255, 0.1);
+padding: 15px;
+border-radius: 10px;
+margin-top: 20px;
+text-align: left;
+}
+.worry-note p {
+margin: 5px 0;
+font-style: italic;
+color: rgba(255, 255, 255, 0.8);
+}
+/* Distraction Section */
+#distractionSection {
+display: none;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+padding: 40px;
+background: rgba(30, 30, 40, 0.8);
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+max-width: 600px;
+width: 90%;
+backdrop-filter: blur(5px);
+z-index: 3;
+}
+.distraction-container {
+margin: 20px 0;
+}
+.distraction-options {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 15px;
+margin-top: 20px;
+}
+.distraction-option {
+width: 120px;
+height: 120px;
+border-radius: 10px;
+background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.distraction-option:hover {
+transform: translateY(-5px);
+box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+}
+.distraction-option i {
+font-size: 2em;
+margin-bottom: 10px;
+}
+.distraction-option span {
+font-size: 14px;
+font-weight: bold;
+}
+.distraction-content {
+margin-top: 20px;
+display: none;
+}
+.distraction-content.active {
+display: block;
+}
+.drawing-canvas {
+border: 2px solid #5b84d6;
+border-radius: 10px;
+background: white;
+cursor: crosshair;
+}
+.drawing-tools {
+display: flex;
+justify-content: center;
+gap: 10px;
+margin-top: 15px;
+}
+.drawing-tools button {
+padding: 8px 15px;
+background: #5b84d6;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+transition: background 0.3s ease;
+}
+.drawing-tools button:hover {
+background: #4a70b0;
+}
+.color-picker {
+height: 30px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+/* Rainbow effect for text */
+.rainbow-text {
+background: linear-gradient(to right, #ff8a00, #e52e71, #2f80ed, #56ccf2, #2f80ed, #e52e71, #ff8a00);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+animation: rainbow 6s linear infinite;
+background-size: 400% 100%;
+}
+@keyframes rainbow {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+.nav-bar {
+width: 100%;
+height: auto;
+position: fixed;
+bottom: 0;
+top: auto;
+left: 0;
+transform: none;
+flex-direction: row;
+padding: 10px 0;
+border-radius: 0;
+}
+.nav-item {
+font-size: 12px;
+padding: 10px 5px;
+}
+.milo-container {
+bottom: 80px;
+}
+#chatBox {
+width: 90%;
+right: 5%;
+left: 5%;
+}
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="login-container" id="loginPage">
+<div class="login-box">
+<h2>Milo</h2>
+<input type="text" id="username" placeholder="USERNAME" />
+<input type="password" id="password" placeholder="PASSWORD" />
+<button onclick="login()">LOG IN</button>
+</div>
+</div>
+<div class="main-page" id="mainPage">
+<div class="nav-bar">
+<div class="nav-item" id="navChat">💬<br />Chat</div>
+<div class="nav-item" id="navStory">📖<br />Tell Me a Story</div>
+<div class="nav-item" id="navCalm">☁️<br />Calm Mode</div>
+<div class="nav-item" id="navWorries">☁️<br />Cloud Worries</div>
+<div class="nav-item" id="navDistraction">🎨<br />A Little Distraction</div>
+</div>
+<div id="guitarPlayer">
+  <img id="guitarGif" src="gitt.gif" alt="Guitar Player" />
+  <audio id="guitarAudio" src="music.mp3"></audio>
+</div>
+
+<div class="milo-container" id="miloIntro">
+<img src="milo.png" alt="Milo" />
+<div class="bubble" onclick="nextIntro()">Oh hey, Owl! You're right on time. KS sent me to hang out with you — no pressure, just vibes.</div>
+</div>
+<div id="chatBox">
+<button id="chatBackBtn" style="
+background: transparent;
+color: #aaa;
+border: none;
+font-size: 14px;
+text-align: left;
+padding: 10px;
+cursor: pointer;
+width: 100%;
+">← Back</button>
+<div class="chat-history" id="chatHistory"></div>
+<div class="chat-input">
+<input type="text" id="chatInput" placeholder="Say something..." />
+<button id="chatSend">Send</button>
+</div>
+</div>
+<!-- Story Section -->
+<div id="storySection" class="section">
+<h2>📖 Tell Me a Story</h2>
+<p id="storyText">Ready for a story?</p>
+<button id="nextStoryLine">Next</button>
+<button id="backFromStory" style="display:none; margin-top:15px; background:#fda085; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Back</button>
+</div>
+<!-- Calm Mode Section -->
+<div id="calmModeSection" class="section">
+<h2>🌬️ Calm Mode</h2>
+<p>Let's take a moment to breathe together</p>
+<div class="breathing-container">
+<div class="breathing-circle" id="breathingCircle"></div>
+<div class="breathing-instructions" id="breathingInstructions">Breathe in...</div>
+</div>
+<button id="startBreathing">Start Breathing Exercise</button>
+<div class="calm-tips">
+<h3>💡 Quick Calm Tips:</h3>
+<ul>
+<li>Take 5 deep breaths when feeling overwhelmed</li>
+<li>Look at something green for 20 seconds</li>
+<li>Listen to the sound of rain falling</li>
+<li>Notice 5 things you can see around you</li>
+</ul>
+</div>
+</div>
+<!-- Cloud Worries Section -->
+<div id="cloudWorriesSection" class="section">
+<h2>☁️ Cloud Worries</h2>
+<p>Write down your worries and watch them float away</p>
+<div class="cloud-container" id="cloudContainer"></div>
+<input type="text" class="worry-input" id="worryInput" placeholder="Type your worry here...">
+<button class="release-btn" id="releaseWorry">Release to the Clouds ☁️</button>
+<div class="worry-note">
+<p>✨ Sometimes sharing your worries with the clouds helps them feel lighter.</p>
+<p>✨ They'll drift away, but your feelings are always valid.</p>
+</div>
+</div>
+<!-- Distraction Section -->
+<div id="distractionSection" class="section">
+<h2>🎨 A Little Distraction</h2>
+<p>Choose an activity to brighten your day</p>
+<div class="distraction-container">
+<div class="distraction-options">
+<div class="distraction-option" data-activity="drawing">
+<i class="fas fa-paint-brush"></i>
+<span>Draw Something</span>
+</div>
+<div class="distraction-option" data-activity="music">
+<i class="fas fa-music"></i>
+<span>Listen to Music</span>
+</div>
+<div class="distraction-option" data-activity="joke">
+<i class="fas fa-laugh"></i>
+<span>Read a Joke</span>
+</div>
+</div>
+<div class="distraction-content" id="drawingContent">
+<h3>Express yourself through art</h3>
+<canvas id="drawingCanvas" width="400" height="300" class="drawing-canvas"></canvas>
+<div class="drawing-tools">
+<input type="color" id="colorPicker" class="color-picker" value="#5b84d6">
+<button id="clearCanvas">Clear Canvas</button>
+</div>
+</div>
+<div class="distraction-content" id="musicContent">
+<h3>Listen to calming music</h3>
+<div class="music-list">
+  <div class="song-item">
+    <span class="song-title">Blue</span> - Young kai
+    <audio src="blue.mp3" controls></audio>
+  </div>
+  <div class="song-item">
+    <span class="song-title">Savera</span> - Iqlipse Nova
+    <audio src="saveraa.mp3" controls></audio>
+  </div>
+  <div class="song-item">
+    <span class="song-title">Life goes on</span> - BTS
+    <audio src="life.mp3" controls></audio>
+  </div>
+  <div class="song-item">
+    <span class="song-title">8 Letters</span> - Why don't we
+    <audio src="letters.mp3" controls></audio>
+  </div>
+</div>
+</div>
+<div class="distraction-content" id="jokeContent">
+<h3>Need a laugh?</h3>
+<p id="jokeText">Why don't scientists trust atoms?</p>
+<p id="jokeAnswer">Because they make up everything!</p>
+<button id="newJoke">Get Another Joke</button>
+</div>
+</div>
+<script>
+ 
+// Login functionality
+function login() {
+const username = document.getElementById("username").value;
+const password = document.getElementById("password").value;
+if (username && password) {
+document.getElementById("loginPage").style.display = "none";
+document.getElementById("mainPage").style.display = "block";
+hideAllSections();
+document.getElementById("miloIntro").style.display = "block";
+    
+
+document.getElementById("guitarGif").addEventListener("click", () => {
+  const audio = document.getElementById("guitarAudio");
+
+  if (audio.paused) {
+    audio.currentTime = 0;
+    audio.play();
+  } else {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+});
+
+// Play background music after login
+} else {
+alert("Please enter username and password!");
+}
+} 
+// Hide all sections except intro
+function hideAllSections() {
+// Keep Milo visible, hide everything else
+document.getElementById("chatBox").style.display = "none";
+document.getElementById("storySection").style.display = "none";
+document.getElementById("calmModeSection").style.display = "none";
+document.getElementById("cloudWorriesSection").style.display = "none";
+document.getElementById("distractionSection").style.display = "none";
+}
+// Intro flow
+const introMessages = [
+"Oh hey, Owl! You're right on time. KS sent me to hang out with you — no pressure, just vibes.",
+"Let me show you around! Here's what I can do:",
+"Tap 'Chat' when you need a friend 🐾",
+"Escape with 'Tell Me a Story' under the stars 📖",
+"Breathe easy in 'Calm Mode' ☁️",
+"Let go of worries with 'Cloud Worries' ☁️",
+"Or play in 'A Little Distraction' when life gets too heavy 🎨"
+];
+let introIndex = 0;
+function nextIntro() {
+const bubble = document.querySelector(".bubble");
+introIndex++;
+if (introIndex < introMessages.length) {
+bubble.innerText = introMessages[introIndex];
+} else {
+bubble.style.display = "none";
+}
+}
+// Story functionality
+const stories = [
+"There was once a planet, quiet and cold.",
+"It hadn't spun in a while. The stars thought it was sleeping.",
+"But inside, the planet wasn't resting — it was just exhausted.",
+"Its skies were cloudy. Its rivers were still.",
+"It missed the days when it felt full of light, but didn't know how to go back.",
+"One day, a small moon drifted close and whispered,",
+"“You don't need to shine right now. Just exist. I'll orbit until you're ready.”",
+"So the planet didn't try to fix itself.",
+"It just stayed still, letting someone stay close.",
+"Sometimes healing isn't loud. It's quiet. And slow. And still okay. 🌒"
+];
+let currentStoryIndex = 0;
+const storyTextElement = document.getElementById("storyText");
+const nextStoryLineBtn = document.getElementById("nextStoryLine");
+const backFromStoryBtn = document.getElementById("backFromStory");
+document.getElementById("navStory").addEventListener("click", () => {
+  hideAllSections();
+  document.getElementById("storySection").style.display = "block";
+  currentStoryIndex = 0;
+  storyTextElement.innerText = stories[currentStoryIndex];
+  nextStoryLineBtn.innerText = "Next";
+});
+nextStoryLineBtn.addEventListener("click", () => {
+  currentStoryIndex++;
+  if (currentStoryIndex < stories.length) {
+    storyTextElement.innerText = stories[currentStoryIndex];
+    if (currentStoryIndex === stories.length - 1) {
+      nextStoryLineBtn.innerText = "Back";
+    }
+  } else {
+    // End of story, go back to Milo intro
+    hideAllSections();
+    currentStoryIndex = 0;
+    nextStoryLineBtn.innerText = "Next";
+  }
+});
+// Cloud Worries functionality - FIXED
+const cloudWorriesBtn = document.getElementById("navWorries");
+const cloudWorriesSection = document.getElementById("cloudWorriesSection");
+const cloudContainer = document.getElementById("cloudContainer");
+const worryInput = document.getElementById("worryInput");
+const releaseWorryBtn = document.getElementById("releaseWorry");
+let activeClouds = []; // Track active clouds
+cloudWorriesBtn.addEventListener("click", () => {
+  hideAllSections();
+  document.getElementById("cloudWorriesSection").style.display = "block";
+  clearAllClouds(); // Clear any existing clouds
+});
+// Clear all clouds from DOM
+function clearAllClouds() {
+  while (cloudContainer.firstChild) {
+    cloudContainer.removeChild(cloudContainer.firstChild);
+  }
+  activeClouds = [];
+}
+// Create a single cloud for animation only
+function createAnimationCloud(text) {
+  const cloud = document.createElement("div");
+  cloud.className = "cloud";
+  cloud.style.width = Math.random() * 60 + 80 + "px";
+  cloud.style.height = Math.random() * 60 + 60 + "px";
+  cloud.style.top = Math.random() * 120 + "px";
+  cloud.style.left = Math.random() * 280 + "px";
+  cloud.innerText = text;
+  cloudContainer.appendChild(cloud);
+  
+  // Enhanced cloud animation - flying away
+  setTimeout(() => {
+    const randomX = (Math.random() - 0.5) * 300; // Random horizontal movement
+    const randomY = -300 - Math.random() * 200; // Upward movement
+    const randomRotate = (Math.random() - 0.5) * 40; // Random rotation
+    cloud.style.transition = "all 2s ease-out";
+    cloud.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`;
+    cloud.style.opacity = "0";
+    // Remove from DOM after animation
+    setTimeout(() => {
+      if (cloud.parentNode) {
+        cloud.parentNode.removeChild(cloud);
+      }
+    }, 2000);
+  }, 100);
+}
+releaseWorryBtn.addEventListener("click", () => {
+  const worryText = worryInput.value.trim();
+  if (worryText) {
+    createAnimationCloud(worryText);
+    worryInput.value = "";
+  }
+});
+// Calm Mode functionality - FIXED
+const navCalmBtn = document.getElementById("navCalm");
+const calmModeSection = document.getElementById("calmModeSection");
+const breathingCircle = document.getElementById("breathingCircle");
+const breathingInstructions = document.getElementById("breathingInstructions");
+const startBreathingBtn = document.getElementById("startBreathing");
+let breathingInterval;
+let isBreathing = false;
+navCalmBtn.addEventListener("click", () => {
+  hideAllSections();
+  document.getElementById("calmModeSection").style.display = "block";
+});
+startBreathingBtn.addEventListener("click", function() {
+  if (!isBreathing) {
+    isBreathing = true;
+    startBreathingBtn.innerText = "Stop Breathing";
+    startBreathing();
+  } else {
+    isBreathing = false;
+    startBreathingBtn.innerText = "Start Breathing Exercise";
+    clearInterval(breathingInterval);
+    breathingCircle.style.transform = "scale(1)";
+    breathingInstructions.innerText = "Breathe in...";
+  }
+});
+function startBreathing() {
+  let inhale = true;
+  breathingCircle.style.transform = "scale(1)";
+  clearInterval(breathingInterval);
+  breathingInterval = setInterval(() => {
+    if (inhale) {
+      breathingInstructions.innerText = "Breathe in...";
+      breathingCircle.style.transform = "scale(1.3)";
+    } else {
+      breathingInstructions.innerText = "Breathe out...";
+      breathingCircle.style.transform = "scale(1)";
+    }
+    inhale = !inhale;
+  }, 4000);
+}
+// Distraction functionality - FIXED
+const navDistractionBtn = document.getElementById("navDistraction");
+const distractionSection = document.getElementById("distractionSection");
+const distractionOptions = document.querySelectorAll(".distraction-option");
+const distractionContents = document.querySelectorAll(".distraction-content");
+navDistractionBtn.addEventListener("click", () => {
+  hideAllSections();
+  document.getElementById("distractionSection").style.display = "block";
+});
+distractionOptions.forEach(option => {
+  option.addEventListener("click", function() {
+    const activity = this.dataset.activity;
+    // Hide all content
+    distractionContents.forEach(content => content.classList.remove("active"));
+    // Show selected content
+    if (activity === "drawing") {
+      document.getElementById("drawingContent").classList.add("active");
+    } else if (activity === "music") {
+      document.getElementById("musicContent").classList.add("active");
+    } else if (activity === "joke") {
+      document.getElementById("jokeContent").classList.add("active");
+    }
+  });
+});
+// Drawing functionality - FIXED
+const canvas = document.getElementById("drawingCanvas");
+const ctx = canvas.getContext("2d");
+const colorPicker = document.getElementById("colorPicker");
+const clearCanvasBtn = document.getElementById("clearCanvas");
+// Make canvas responsive
+function resizeCanvas() {
+  const container = canvas.parentElement;
+  const containerWidth = container.clientWidth - 40; // Account for padding
+  const containerHeight = Math.min(containerWidth * 0.75, 300); // Maintain aspect ratio
+  
+  canvas.width = containerWidth;
+  canvas.height = containerHeight;
+  
+  // Clear canvas on resize
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // Initial sizing
+canvas.addEventListener("mousedown", (e) => {
+  isDrawing = true;
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+});
+canvas.addEventListener("mousemove", (e) => {
+  if (!isDrawing) return;
+  ctx.strokeStyle = colorPicker.value;
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+});
+canvas.addEventListener("mouseup", () => {
+  isDrawing = false;
+});
+canvas.addEventListener("mouseout", () => {
+  isDrawing = false;
+});
+clearCanvasBtn.addEventListener("click", () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+// Jokes functionality
+const jokes = [
+{
+question: "Why don't scientists trust atoms?",
+answer: "Because they make up everything!"
+},
+{
+question: "What do you call a fake noodle?",
+answer: "An impasta!"
+},
+{
+question: "Why did the scarecrow win an award?",
+answer: "Because he was outstanding in his field!"
+},
+{
+question: "How does a penguin build its house?",
+answer: "Igloos it together!"
+},
+{
+question: "What do you call a bear with no teeth?",
+answer: "A gummy bear!"
+}
+];
+const jokeText = document.getElementById("jokeText");
+const jokeAnswer = document.getElementById("jokeAnswer");
+const newJokeBtn = document.getElementById("newJoke");
+newJokeBtn.addEventListener("click", () => {
+const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+jokeText.innerText = randomJoke.question;
+jokeAnswer.innerText = randomJoke.answer;
+});
+// Chat functionality - FIXED
+const chatHistory = document.getElementById("chatHistory");
+const chatInput = document.getElementById("chatInput");
+const chatSend = document.getElementById("chatSend");
+function handleSend() {
+  const input = chatInput.value.trim();
+  if (!input) return;
+  appendMessage("user", input);
+  chatInput.value = "";
+  setTimeout(() => {
+    const reply = elizaReply(input);
+    appendMessage("milo", reply);
+  }, 500);
+}
+function appendMessage(sender, text) {
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("message");
+  if (sender === "milo") {
+    const avatar = document.createElement("img");
+    avatar.src = "milo.png";
+    avatar.className = "milo-avatar";
+    const bubble = document.createElement("div");
+    bubble.className = "milo-msg";
+    bubble.innerText = text;
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(bubble);
+  } else {
+    const bubble = document.createElement("div");
+    bubble.className = "user-msg";
+    bubble.innerText = text;
+    msgDiv.appendChild(bubble);
+  }
+  chatHistory.appendChild(msgDiv);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+function elizaReply(msg) {
+  const reflections = {
+    "i am": "you are",
+    "i": "you",
+    "my": "your",
+    "me": "you",
+    "am": "are"
+  };
+  const fallbackResponses = [
+    "Tell me more about that.",
+    "That's interesting — go on?",
+    "Want to unpack that a little?",
+    "I'm listening…",
+    "How does that make you feel?",
+    "What does that mean to you?",
+    "Sounds important. What's behind that?"
+  ];
+  const getRandomFallback = () =>
+    fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+  const isLateNight = () => {
+    const hour = new Date().getHours();
+    return hour >= 22 || hour < 5;
+  };
+  const rules = [
+    // --- Emotion keywords (new) ---
+    { pattern: /^sad$/i, response: "It's okay to feel sad sometimes. Want to talk about what's making you feel this way?" },
+    { pattern: /^why$/i, response: "That's a deep question. Is there something specific you're wondering about?" },
+    { pattern: /^no$/i, response: "No is a strong word. Want to share what's behind it?" },
+    { pattern: /^maybe$/i, response: "Feeling unsure is totally normal. Want to explore it together?" },
+    { pattern: /^okay$/i, response: "Just okay? I'm here if you want to talk more." },
+    { pattern: /^fine$/i, response: "Sometimes 'fine' hides more underneath. Want to share more honestly?" },
+    // --- Existing + improved ---
+    { pattern: /hi|hello|hey/i, response: () => isLateNight() ? "Hey Owl — can't sleep?" : "Hey Owl! What's up?" },
+    { pattern: /bye|goodbye|see you/i, response: "Talk soon, Owl 🌙" },
+    { pattern: /i'm tired/i, response: "Sounds like you need some rest. What's been wearing you out?" },
+    { pattern: /i'm anxious/i, response: "What's making you feel anxious?" },
+    { pattern: /i'm sad/i, response: "It's okay to feel sad. Want to talk about it?" },
+    { pattern: /i'm happy/i, response: "Yay! What's bringing you joy today?" },
+    { pattern: /i'm bored/i, response: "Would you like to try something new or talk it out?" },
+    { pattern: /no one understands me/i, response: "That sounds lonely. I'm here now — tell me more." },
+    { pattern: /i'm alone/i, response: "You're not alone while I'm here 🐾" },
+    { pattern: /i'm confused/i, response: "Want to try untangling it together?" },
+    { pattern: /i'm not okay/i, response: "Thank you for being honest. Do you want to talk more about what's not okay?" },
+    { pattern: /i'm broken/i, response: "You're not broken. You're just hurting. Let's talk about it, gently." },
+    { pattern: /why am i like this/i, response: "That sounds like a really painful thought. I'm here with you — want to talk it through?" },
+    // --- Standard eliza rules ---
+    { pattern: /i need (.*)/i, response: "Why do you need $1?" },
+    { pattern: /i want (.*)/i, response: "What would it mean if you got $1?" },
+    { pattern: /i feel (.*)/i, response: "Why do you feel $1?" },
+    { pattern: /i am (.*)/i, response: "How long have you been $1?" },
+    { pattern: /i'm (.*)/i, response: "Why are you $1?" },
+    { pattern: /i can't (.*)/i, response: "What makes you think you can't $1?" },
+    { pattern: /i don't know (.*)/i, response: "Why don't you know $1?" },
+    { pattern: /i think (.*)/i, response: "Do you often think $1?" },
+    { pattern: /i like (.*)/i, response: "Why do you like $1?" },
+    { pattern: /i love (.*)/i, response: "That's great! What makes you love $1?" },
+    { pattern: /i hate (.*)/i, response: "What brings on such strong dislike for $1?" },
+    { pattern: /i miss (.*)/i, response: "Why do you miss $1?" },
+    { pattern: /i wish (.*)/i, response: "What would happen if your wish came true?" },
+    { pattern: /can you (.*)/i, response: "What makes you think I can $1?" },
+    { pattern: /do you (.*)/i, response: "Why does it matter whether I $1?" },
+    { pattern: /are you (.*)/i, response: "Would it matter if I were $1?" },
+    { pattern: /you (.*)/i, response: "We should focus on you, not me." },
+    { pattern: /because (.*)/i, response: "Is that the real reason?" },
+    { pattern: /why (.*)/i, response: "Why do you think $1?" },
+    { pattern: /my name is (.*)/i, response: "Nice to meet you, $1!" },
+    { pattern: /my (.*)/i, response: "Tell me more about your $1." },
+    { pattern: /what is your name/i, response: "You can call me Milo 🐾" },
+    { pattern: /who created you/i, response: "Just someone who wanted to help Owl feel seen." },
+    { pattern: /thank you/i, response: "Always here for you 🌸" },
+    { pattern: /who.*ks/i, response: "Sounds like you're curious about KS! Just someone who helped build this cozy space ✨" },
+    { pattern: /thank.*ks/i, response: "Aww, KS would probably smile hearing that ☀️" },
+    { pattern: /love ks/i, response: "That's sweet! I think KS would love hearing that 💖" },
+    { pattern: /ks sucks/i, response: "Hey, I get you. But KS did try their best to make this space 🌱" },
+    {
+      pattern: /die|want to die|ending it/i,
+      response: "That's not true — all you ever wanted was to live happily. And I promise, you will. Just hold on a little longer. If it ever feels too lonely... you know where to find me 🐾"
+    },
+    {
+      pattern: /don't want to live|no reason to live/i,
+      response: "I hear how heavy this feels. But you're here — and that's brave. Maybe all you need is a little more light... and I'll stay here with you until it returns 🌙"
+    },
+    { pattern: /i feel empty/i, response: "Feeling empty can be tough. Want to talk about where that feeling comes from?" },
+    { pattern: /i feel numb/i, response: "Sometimes numbness is our mind's way of protecting us. I'm here with you." },
+    { pattern: /i'm lost/i, response: "Lost doesn't mean broken. Want to talk through it together?" },
+    { pattern: /i'm not okay/i, response: "Thank you for being honest. Do you want to talk more about what's not okay?" },
+    { pattern: /i'm broken/i, response: "You're not broken. You're just hurting. Let's talk about it, gently." },
+    { pattern: /why am i like this/i, response: "That sounds like a really painful thought. I'm here with you — want to talk it through?" },
+    // --- Fallback ---
+    { pattern: /(.*)/i, response: () => getRandomFallback() }
+  ];
+  function reflect(fragment) {
+    return fragment.replace(/\b(i am|i|my|me|you|am)\b/gi, match =>
+      reflections[match.toLowerCase()] || match
+    );
+  }
+  for (let rule of rules) {
+    const match = msg.match(rule.pattern);
+    if (match) {
+      let response = typeof rule.response === "function" ? rule.response() : rule.response;
+      for (let i = 1; i < match.length; i++) {
+        response = response.replace(`$${i}`, reflect(match[i]));
+      }
+      return response;
+    }
+  }
+  return getRandomFallback();
+}
+// Starry Background Animation
+function createStars() {
+const starsContainer = document.getElementById('stars');
+const starsCount = 200;
+for (let i = 0; i < starsCount; i++) {
+const star = document.createElement('div');
+star.className = 'star';
+// Random size between 1-3px
+const size = Math.random() * 2 + 1;
+star.style.width = `${size}px`;
+star.style.height = `${size}px`;
+// Random position
+star.style.left = `${Math.random() * 100}%`;
+star.style.top = `${Math.random() * 100}%`;
+// Random animation duration between 3-8s
+const duration = Math.random() * 5 + 3;
+star.style.setProperty('--duration', `${duration}s`);
+starsContainer.appendChild(star);
+}
+}
+// Initialize stars and nav listener when DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  createStars(); // already in your code ✅
+  
+  // ✅ NEW: Add Chat nav click listener
+  document.getElementById("navChat").addEventListener("click", () => {
+    console.log("Chat button clicked"); // optional debug
+    hideAllSections(); // hide other screens
+    document.getElementById("chatBox").style.display = "flex"; // show chat
+  });
+  
+  // ✅ Add event listener for chat send button
+  document.getElementById("chatSend").addEventListener("click", handleSend);
+  
+  // ✅ Add event listener for Enter key in chat input
+  document.getElementById("chatInput").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent form submission if any
+      handleSend();
+    }
+  });
+  
+  // ✅ Make back button functional
+  document.getElementById("chatBackBtn").addEventListener("click", () => {
+    hideAllSections();
+    document.getElementById("chatBox").style.display = "none";
+  });
+});
+// Make sure distraction music keeps looping - FIXED
+function playDistractionSong(songId) {
+  const selectedSong = document.getElementById(songId);
+  if (!selectedSong) return;
+  // Pause other distraction songs
+  document.querySelectorAll('audio[id^="distractionSong"]').forEach(song => {
+    if (song !== selectedSong) {
+      song.pause();
+      song.currentTime = 0;
+    }
+  });
+  selectedSong.currentTime = 0;
+  selectedSong.play().catch(e => {
+    console.log("Distraction song couldn't play:", e);
+  });
+}
+</script>
+</body>
+</html>
