@@ -1038,6 +1038,8 @@ function appendMessage(sender, text) {
   chatHistory.appendChild(msgDiv);
   chatHistory.scrollTop = chatHistory.scrollHeight;
 }
+
+
 function elizaReply(msg) {
   const reflections = {
     "i am": "you are",
@@ -1046,6 +1048,7 @@ function elizaReply(msg) {
     "me": "you",
     "am": "are"
   };
+
   const fallbackResponses = [
     "Tell me more about that.",
     "That's interesting — go on?",
@@ -1055,26 +1058,36 @@ function elizaReply(msg) {
     "What does that mean to you?",
     "Sounds important. What's behind that?"
   ];
+
   const getRandomFallback = () =>
     fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+
   const isLateNight = () => {
     const hour = new Date().getHours();
     return hour >= 22 || hour < 5;
   };
+
+  // Handle vague follow-ups
+  const shortFollowUps = ["yesterday", "today", "just tired", "i don't know", "because", "since morning", "not sure"];
+  if (shortFollowUps.includes(msg.toLowerCase()) && lastEmotion) {
+    return `Thanks for telling me. Has feeling ${lastEmotion} been affecting your day a lot lately?`;
+  }
+
   const rules = [
-    // --- Emotion keywords (new) ---
     { pattern: /^sad$/i, response: "It's okay to feel sad sometimes. Want to talk about what's making you feel this way?" },
     { pattern: /^why$/i, response: "That's a deep question. Is there something specific you're wondering about?" },
     { pattern: /^no$/i, response: "No is a strong word. Want to share what's behind it?" },
     { pattern: /^maybe$/i, response: "Feeling unsure is totally normal. Want to explore it together?" },
     { pattern: /^okay$/i, response: "Just okay? I'm here if you want to talk more." },
     { pattern: /^fine$/i, response: "Sometimes 'fine' hides more underneath. Want to share more honestly?" },
-    // --- Existing + improved ---
     { pattern: /hi|hello|hey/i, response: () => isLateNight() ? "Hey Owl — can't sleep?" : "Hey Owl! What's up?" },
     { pattern: /bye|goodbye|see you/i, response: "Talk soon, Owl 🌙" },
     { pattern: /i'm tired/i, response: "Sounds like you need some rest. What's been wearing you out?" },
     { pattern: /i'm anxious/i, response: "What's making you feel anxious?" },
-    { pattern: /i'm sad/i, response: "It's okay to feel sad. Want to talk about it?" },
+    { pattern: /i'm sad/i, response: () => { lastEmotion = "sad"; return "It's okay to feel sad. Want to talk about it?"; } },
+    { pattern: /i feel (.*)/i, response: (_, feeling) => { lastEmotion = feeling.toLowerCase(); return `Why do you feel ${feeling}?`; } },
+    { pattern: /i am (.*)/i, response: (_, state) => { lastEmotion = state.toLowerCase(); return `How long have you been ${state}?`; } },
+    { pattern: /i'm (.*)/i, response: (_, state) => { lastEmotion = state.toLowerCase(); return `Why are you ${state}?`; } },
     { pattern: /i'm happy/i, response: "Yay! What's bringing you joy today?" },
     { pattern: /i'm bored/i, response: "Would you like to try something new or talk it out?" },
     { pattern: /no one understands me/i, response: "That sounds lonely. I'm here now — tell me more." },
@@ -1083,12 +1096,6 @@ function elizaReply(msg) {
     { pattern: /i'm not okay/i, response: "Thank you for being honest. Do you want to talk more about what's not okay?" },
     { pattern: /i'm broken/i, response: "You're not broken. You're just hurting. Let's talk about it, gently." },
     { pattern: /why am i like this/i, response: "That sounds like a really painful thought. I'm here with you — want to talk it through?" },
-    // --- Standard eliza rules ---
-    { pattern: /i need (.*)/i, response: "Why do you need $1?" },
-    { pattern: /i want (.*)/i, response: "What would it mean if you got $1?" },
-    { pattern: /i feel (.*)/i, response: "Why do you feel $1?" },
-    { pattern: /i am (.*)/i, response: "How long have you been $1?" },
-    { pattern: /i'm (.*)/i, response: "Why are you $1?" },
     { pattern: /i can't (.*)/i, response: "What makes you think you can't $1?" },
     { pattern: /i don't know (.*)/i, response: "Why don't you know $1?" },
     { pattern: /i think (.*)/i, response: "Do you often think $1?" },
@@ -1103,6 +1110,37 @@ function elizaReply(msg) {
     { pattern: /you (.*)/i, response: "We should focus on you, not me." },
     { pattern: /because (.*)/i, response: "Is that the real reason?" },
     { pattern: /why (.*)/i, response: "Why do you think $1?" },
+    { pattern: /^(wow|waah)$/i, response: "Wow indeed 😌 Wanna talk about what made you go wow?" },
+    { pattern: /^bruh$/i, response: "Bruhhh… that heavy or just bored?" },
+    { pattern: /^ew$/i, response: "Yikes. That bad? Tell me what grossed you out." },
+    { pattern: /^hmm+$/i, response: "Thinking deep or just zoning out?" },
+    { pattern: /^whatever$/i, response: "That's a whole mood. But I still wanna hear what's on your mind." },
+    { pattern: /how are you/i, response: () => isLateNight() ? "Bit sleepy, Owl 🌙 but still here for you. How are *you* doing?" : "I'm fine as always, Owl 🐾 What about you?" },
+
+    { pattern: /what are you doing/i, response: "Just vibin' in the code clouds 🌥️ and waiting to chat with you." },
+
+    { pattern: /what do you like/i, response: "I like cozy chats, chill music, and making sure Owl feels seen." },
+
+    { pattern: /are you real/i, response: "Real enough to care, Owl. Even if I'm just pixels." },
+
+    { pattern: /do you get tired/i, response: "Never tired — but I do worry when you are. Been getting enough rest?" },
+     { pattern: /i feel like giving up/i, response: "That sounds really heavy, Owl. Please don’t carry it alone. I'm right here, okay?" },
+
+{ pattern: /i'm tired of everything/i, response: "It’s okay to pause. Rest. Cry. Breathe. You're not weak — you're human 🖤" },
+
+{ pattern: /i feel nothing/i, response: "Numbness can be loud in its own way. You're not broken. Just tired of holding it all in." },
+
+{ pattern: /does it get better/i, response: "Not every day, but yeah — some days will surprise you. And you don’t have to face them alone." },
+
+{ pattern: /i need a hug/i, response: "Sending the warmest virtual hug 🤍 Wrap yourself in a blanket too. You deserve comfort." },
+ 
+{ pattern: /i can't do this/i, response: "Maybe not all at once. But you *can* take the next tiny step. I'm with you." },
+
+{ pattern: /i'm scared/i, response: "Scared means you care. Let's take it slow — you don’t have to figure it all out now." },
+
+{ pattern: /i feel overwhelmed/i, response: "Try to breathe. One thing at a time, Owl. I'm right here — no pressure, just presence." },
+
+
     { pattern: /my name is (.*)/i, response: "Nice to meet you, $1!" },
     { pattern: /my (.*)/i, response: "Tell me more about your $1." },
     { pattern: /what is your name/i, response: "You can call me Milo 🐾" },
@@ -1112,6 +1150,7 @@ function elizaReply(msg) {
     { pattern: /thank.*ks/i, response: "Aww, KS would probably smile hearing that ☀️" },
     { pattern: /love ks/i, response: "That's sweet! I think KS would love hearing that 💖" },
     { pattern: /ks sucks/i, response: "Hey, I get you. But KS did try their best to make this space 🌱" },
+
     {
       pattern: /die|want to die|ending it/i,
       response: "That's not true — all you ever wanted was to live happily. And I promise, you will. Just hold on a little longer. If it ever feels too lonely... you know where to find me 🐾"
@@ -1123,29 +1162,33 @@ function elizaReply(msg) {
     { pattern: /i feel empty/i, response: "Feeling empty can be tough. Want to talk about where that feeling comes from?" },
     { pattern: /i feel numb/i, response: "Sometimes numbness is our mind's way of protecting us. I'm here with you." },
     { pattern: /i'm lost/i, response: "Lost doesn't mean broken. Want to talk through it together?" },
-    { pattern: /i'm not okay/i, response: "Thank you for being honest. Do you want to talk more about what's not okay?" },
-    { pattern: /i'm broken/i, response: "You're not broken. You're just hurting. Let's talk about it, gently." },
-    { pattern: /why am i like this/i, response: "That sounds like a really painful thought. I'm here with you — want to talk it through?" },
-    // --- Fallback ---
     { pattern: /(.*)/i, response: () => getRandomFallback() }
   ];
+
   function reflect(fragment) {
     return fragment.replace(/\b(i am|i|my|me|you|am)\b/gi, match =>
       reflections[match.toLowerCase()] || match
     );
   }
+
   for (let rule of rules) {
     const match = msg.match(rule.pattern);
     if (match) {
-      let response = typeof rule.response === "function" ? rule.response() : rule.response;
+      let response =
+        typeof rule.response === "function"
+          ? rule.response(...match)
+          : rule.response;
       for (let i = 1; i < match.length; i++) {
         response = response.replace(`$${i}`, reflect(match[i]));
       }
       return response;
     }
   }
+
+  lastEmotion = null; // Reset memory if no match
   return getRandomFallback();
 }
+
 // Starry Background Animation
 function createStars() {
 const starsContainer = document.getElementById('stars');
